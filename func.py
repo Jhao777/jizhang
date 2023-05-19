@@ -154,10 +154,28 @@ def update_user_by_date_and_name(date, name, new_data):
     conn.commit()
     print("用户信息已成功更新。")
 
+# 定义根据日期范围和箱子型号查询箱子数量的函数
+def query_box_count_by_date_range_and_box_size(start_date, end_date, box_size):
+    # 查询数据库中在指定日期范围内指定箱子型号的箱子数量
+    query = "SELECT SUM(箱数) FROM users WHERE 日期 BETWEEN ? AND ? AND 箱子尺寸=?"
+    c.execute(query, (start_date, end_date, box_size))
+    box_count = c.fetchone()[0]
+
+    # 如果箱子数量为None，则返回错误信息
+    if box_count is None:
+        return f"未找到 {start_date} 到 {end_date} 之间的 {box_size} 箱子数量。"
+
+    # 打印箱子数量
+    print(f"箱子({box_size})数量：{box_count}")
+
+    return box_count
+
+
+
 # 调用修改用户信息的函数
 date = "2022-05-18"
 name = "lNsde"
-new_data = ("2022-05-18", "New Order", "1234567890", "Medium", 50.0, 2, 10.0, 110.0, "Credit Card", None, "2023-05-20", "Shipping", "123 Main St")
+new_data = ("2022-05-18", "New Order", "1234567890", "Medium", 50.0, 2, 10.0, 110.0, "Credit Card", None, "2023-05-20", "Shipping", "123 Main St", None)
 update_user_by_date_and_name(date, name, new_data)
 
 
@@ -181,6 +199,11 @@ find_most_common_box_size()
 # 查询指定姓名的用户的全部信息
 name = "John Doe"
 query_order_by_name(name)
+
+start_date = "2022-05-01"
+end_date = "2022-05-04"
+box_size = "20ml-1"
+query_box_count_by_date_range_and_box_size(start_date, end_date, box_size)
 
 # 关闭数据库连接
 conn.close()

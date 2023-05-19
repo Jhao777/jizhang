@@ -147,5 +147,20 @@ def update_user_in_db(date, name, new_data):
     c.execute(update_query, (*new_data, date, name))
     conn.commit()
 
+# 根据日期范围和箱子型号查询箱子数量
+@app.route('/query_box_count_by_date_range_and_box_size', methods=['POST'])
+def query_box_count_by_date_range_and_box_size():
+    start_date = request.json['start_date']
+    end_date = request.json['end_date']
+    box_size = request.json['box_size']
+    box_count = query_box_count_by_date_range_and_box_size_from_db(start_date, end_date, box_size)
+
+    # 如果返回的是错误信息，则返回相应的错误响应
+    if isinstance(box_count, str):
+        return jsonify({'error': box_count}), 404
+
+    return jsonify({'box_count': box_count})
+
+
 if __name__ == '__main__':
     app.run()
